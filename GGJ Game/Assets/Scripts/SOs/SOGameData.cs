@@ -5,5 +5,5 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "ScriptableObjects/Game Data")]
 public class SOGameData : ScriptableObject
 {
-    
+    public string[] KingsCards;
 }
