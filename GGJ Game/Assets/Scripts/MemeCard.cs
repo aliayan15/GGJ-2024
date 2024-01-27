@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,6 +10,14 @@ public class MemeCard : MonoBehaviour
     public bool IsSelected { get; set; } = true;
 
     private SOMemeCard _myMeme;
+    private Vector3 _myPos;
+    private Vector3 _myScale;
+
+    private void Start()
+    {
+        _myPos = transform.position;
+        _myScale = transform.localScale;
+    }
 
     public void CheckMeme()
     {
@@ -16,6 +25,8 @@ public class MemeCard : MonoBehaviour
         _myMeme = MemeManager.Instance.GetRandomMeme();
         SetSprite();
         IsSelected = false;
+        transform.DOScale(_myScale, 0.2f);
+        transform.DOMove(_myPos, 0.2f);
     }
 
    public void SetMyMeme(SOMemeCard meme)

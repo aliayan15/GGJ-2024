@@ -7,7 +7,8 @@ using UnityEngine;
 public enum TurnStatus
 {
     Begin,
-    End
+    End,
+    BeforeEnd
 }
 
 public class GameManager : MonoBehaviour

@@ -12,9 +12,9 @@ public class KingControler : MonoBehaviour
 
     public MemeCard PlayerMeme { get; set; }
     [HideInInspector]
-    public MemeCard[] JokerMemes=new MemeCard[2];
+    public MemeCard[] JokerMemes = new MemeCard[2];
 
-    public int KingKardIndex { get;private set; }
+    public int KingKardIndex { get; private set; }
 
     private void Start()
     {
@@ -24,13 +24,17 @@ public class KingControler : MonoBehaviour
     public void ShowCard()
     {
         int level = GameManager.GameLevel;
-        if (level > gameData.KingsCards.Length) return;
+        if (level > gameData.KingsCards.Length)
+        {
+            Debug.Log("Game Finished");
+            return;
+        }
 
         KingKardIndex = level - 1;
         string text = gameData.KingsCards[KingKardIndex];
-        StartCoroutine(TextVisible(kingText,text));
+        StartCoroutine(TextVisible(kingText, text));
     }
-    private IEnumerator TextVisible(TextMeshProUGUI textMesh,string text)
+    private IEnumerator TextVisible(TextMeshProUGUI textMesh, string text)
     {
         textMesh.text = text;
         textMesh.ForceMeshUpdate();

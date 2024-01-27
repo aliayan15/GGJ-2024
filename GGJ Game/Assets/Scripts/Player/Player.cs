@@ -18,12 +18,7 @@ public class Player : MonoBehaviour
     private float rotationAngle = 0;
     private Vector3 _lastCardPos;
 
-    private void Start()
-    {
-
-    }
-
-
+    
     private void Update()
     {
         if (!_canChoose) return;
@@ -43,6 +38,7 @@ public class Player : MonoBehaviour
                 _detectedCollider.transform.DOScale(cardScale * 1.1f, 0.1f);
                 _lastCardPos = _detectedCollider.transform.position;
                 _detectedCollider.transform.DOMoveY(_lastCardPos.y + 1, 0.3f);
+                MyChoose.IsSelected = true;
             }
         }
     }
@@ -62,7 +58,6 @@ public class Player : MonoBehaviour
                 _lastCollider.transform.DOScale(cardScale, 0.3f);
                 _lastCollider = null;
             }
-
         }
 
 
