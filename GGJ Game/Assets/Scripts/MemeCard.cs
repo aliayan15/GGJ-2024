@@ -4,15 +4,33 @@ using UnityEngine;
 
 public class MemeCard : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    [SerializeField] private SpriteRenderer s_renderer;
+
+    public bool IsSelected { get; set; } = true;
+
+    private SOMemeCard _myMeme;
+
+    public void CheckMeme()
     {
-        
+        if (!IsSelected) return;
+        _myMeme = MemeManager.Instance.GetRandomMeme();
+        SetSprite();
+        IsSelected = false;
     }
 
-    // Update is called once per frame
-    void Update()
+   public void SetMyMeme(SOMemeCard meme)
     {
-        
+        _myMeme=meme;
     }
+
+    public int GetScore()
+    {
+        return _myMeme.Scores[GameManager.Instance.KingControler.KingKardIndex];
+    }
+
+    private void SetSprite()
+    {
+        s_renderer.sprite = _myMeme.MemeSprite;
+    }
+    
 }
