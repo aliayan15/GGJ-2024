@@ -17,7 +17,10 @@ public class GameManager : MonoBehaviour
     public static int GameLevel { get; private set; } = 1;
     public static Action<TurnStatus> OnTurnChange;
     public static Action OnPlayerChoose;
+    [Header("Refs")]
     public KingControler KingControler;
+    public RectTransform playerCardPlace;
+
 
     public TurnStatus CurrentTurnStatus { get; private set; }
 
@@ -36,11 +39,20 @@ public class GameManager : MonoBehaviour
 
     public void ChangeTurnStatus(TurnStatus turnStatus)
     {
+        Debug.Log("TurnStatus: " + turnStatus);
         CurrentTurnStatus = turnStatus;
         OnTurnChange?.Invoke(CurrentTurnStatus);
 
         if (CurrentTurnStatus == TurnStatus.End)
             OnTurnEnd();
+        if (CurrentTurnStatus == TurnStatus.BeforeEnd)
+            StartCoroutine(OnTurnBeforeEnd());
+    }
+
+    private IEnumerator OnTurnBeforeEnd()
+    {
+        yield return new WaitForSeconds(1f);
+        ChangeTurnStatus(TurnStatus.End);
     }
 
     private void OnTurnEnd()

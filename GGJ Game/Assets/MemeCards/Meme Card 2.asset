@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eab1ee65c0e291b4c9db09434def4ac5, type: 3}
   m_Name: Meme Card 2
   m_EditorClassIdentifier: 
-  MemeSprite: {fileID: 21300000, guid: 377f20c8ea6a25844b84bca854819417, type: 3}
+  MemeSprite: {fileID: 21300000, guid: 830229c2b12198e46af2d9a2cccf673c, type: 3}
   Scores: 3c002d00460037003c00

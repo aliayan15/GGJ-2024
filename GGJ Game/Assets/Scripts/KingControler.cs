@@ -1,14 +1,18 @@
+using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class KingControler : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI kingText;
     [SerializeField] private float timeBtwnChars;
     [SerializeField] private SOGameData gameData;
+    [SerializeField] private float delayAfterPlayer = 2f;
     [Space(10)]
-    [SerializeField] private TextMeshProUGUI[] scoreTexts;
+    [Tooltip("joker 1,2 player")]
+    [SerializeField] private ScoreMarker[] scoreMarkers;
 
     public MemeCard PlayerMeme { get; set; }
     [HideInInspector]
@@ -16,10 +20,7 @@ public class KingControler : MonoBehaviour
 
     public int KingKardIndex { get; private set; }
 
-    private void Start()
-    {
-        ShowScoreTexts(false);
-    }
+
 
     public void ShowCard()
     {
@@ -34,8 +35,9 @@ public class KingControler : MonoBehaviour
         string text = gameData.KingsCards[KingKardIndex];
         StartCoroutine(TextVisible(kingText, text));
     }
-    private IEnumerator TextVisible(TextMeshProUGUI textMesh, string text)
+    private IEnumerator TextVisible(TextMeshProUGUI textMesh, string text, bool closeText = false)
     {
+        textMesh.transform.parent.gameObject.SetActive(true);
         textMesh.text = text;
         textMesh.ForceMeshUpdate();
         int totalVisibleCharacters = textMesh.textInfo.characterCount;
@@ -48,6 +50,8 @@ public class KingControler : MonoBehaviour
 
             if (visibleCount >= totalVisibleCharacters)
             {
+                if (closeText)
+                    textMesh.transform.parent.gameObject.SetActive(false);
                 break;
             }
 
@@ -56,32 +60,94 @@ public class KingControler : MonoBehaviour
         }
     }
 
+
     private void OnTurnChange(TurnStatus status)
     {
         if (status == TurnStatus.Begin)
         {
             ShowCard();
         }
-    }
-    private void OnPlayerChoose()
-    {
-        Invoke(nameof(GiveScore), 2f);
-    }
-    private void GiveScore()
-    {
-        ShowScoreTexts(true);
-
-        scoreTexts[0].text = PlayerMeme.GetScore().ToString();
-        scoreTexts[1].text = JokerMemes[0].GetScore().ToString();
-        scoreTexts[2].text = JokerMemes[1].GetScore().ToString();
-    }
-    private void ShowScoreTexts(bool show)
-    {
-        for (int i = 0; i < scoreTexts.Length; i++)
+        if (status == TurnStatus.BeforeEnd)
         {
-            scoreTexts[i].transform.parent.gameObject.SetActive(show);
+            for (int i = 0; i < scoreMarkers.Length; i++)
+            {
+                scoreMarkers[i].HideScore();
+            }
         }
     }
+
+    #region Player Choose
+    private void OnPlayerChoose()
+    {
+        StartCoroutine(TurnEndSequence());
+    }
+    private IEnumerator TurnEndSequence()
+    {
+        yield return new WaitForSeconds(delayAfterPlayer);
+        int[] scores = new int[3];
+        int jok1 = JokerMemes[0].GetScore();
+        int jok2 = JokerMemes[1].GetScore();
+        int jok3 = PlayerMeme.GetScore();
+        int sc_jok1 = 0, sc_jok2 = 0, sc_jok3 = 0;
+
+        scores[0] = jok1;
+        scores[1] = jok2;
+        scores[2] = jok3;
+        Array.Sort(scores);
+        Array.Reverse(scores);
+
+        if (scores[0] == jok1)
+        {
+            sc_jok1 = 3;
+        }
+        else if (scores[0] == jok2)
+        {
+            sc_jok2 = 3;
+        }
+        else if (scores[0] == jok3)
+        {
+            sc_jok3 = 3;
+        }
+        ///////////////////////
+        if (scores[1] == jok1)
+        {
+            sc_jok1 = 2;
+        }
+        else if (scores[1] == jok2)
+        {
+            sc_jok2 = 2;
+        }
+        else if (scores[1] == jok3)
+        {
+            sc_jok3 = 2;
+        }
+        ///////////////////////
+        if (scores[2] == jok1)
+        {
+            sc_jok1 = 1;
+        }
+        else if (scores[2] == jok2)
+        {
+            sc_jok2 = 1;
+        }
+        else if (scores[2] == jok3)
+        {
+            sc_jok3 = 1;
+        }
+
+        scoreMarkers[0].ShowScore(sc_jok1);
+        yield return new WaitForSeconds(1f);
+        scoreMarkers[1].ShowScore(sc_jok2);
+        yield return new WaitForSeconds(1f);
+        scoreMarkers[2].ShowScore(sc_jok3);
+        yield return new WaitForSeconds(2f); // waiteing for reset
+        // turn end
+        GameManager.Instance.ChangeTurnStatus(TurnStatus.BeforeEnd);
+    }
+
+
+
+    #endregion
 
     private void OnEnable()
     {

@@ -8,7 +8,7 @@ public class MemeManager : MonoBehaviour
 
     [SerializeField] private List<SOMemeCard> memeList;
 
-    private List<SOMemeCard> _usedMemeList;
+    private List<SOMemeCard> _usedMemeList = new List<SOMemeCard>();
 
     private void Awake()
     {
