@@ -29,6 +29,8 @@ public class MemeCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         if (!IsSelected) return;
         _myMeme = MemeManager.Instance.GetRandomMeme();
+        if(_myMeme == null ) return;
+
         SetSprite();
         IsSelected = false;
         //reset transform
@@ -39,6 +41,7 @@ public class MemeCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     public void SetMyMeme(SOMemeCard meme)
     {
         _myMeme = meme;
+        SetSprite();
     }
     // player choose this
     public void OnMemeSelected()
@@ -77,6 +80,10 @@ public class MemeCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
             _recTransform.DOAnchorPos(_myPos, 0.3f);
             _recTransform.DOScale(_myScale, 0.3f);
             _recTransform.DORotate(_myRos.eulerAngles, 0.3f);
+        }
+        if (status == TurnStatus.GameEnd)
+        {
+            this.enabled = false;
         }
 
     }

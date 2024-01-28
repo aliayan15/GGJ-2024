@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Meme Card 2
   m_EditorClassIdentifier: 
   MemeSprite: {fileID: 21300000, guid: 830229c2b12198e46af2d9a2cccf673c, type: 3}
-  Scores: 3c002d00460037003c00
+  Scores: 0f005a0005002d005a00

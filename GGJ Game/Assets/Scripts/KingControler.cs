@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Rendering;
+using UnityEngine.UI;
 
 public class KingControler : MonoBehaviour
 {
@@ -13,28 +15,61 @@ public class KingControler : MonoBehaviour
     [Space(10)]
     [Tooltip("joker 1,2 player")]
     [SerializeField] private ScoreMarker[] scoreMarkers;
+    [Header("Jokers")]
+    [SerializeField] JokerController joker1;
+    [SerializeField] JokerController joker2;
+    [SerializeField] GameObject gameOver;
+    [SerializeField] GameObject gameWin;
+    [SerializeField] Sprite[] kingImages;
+    [SerializeField] Sprite kingSmiling;
+    [SerializeField] Image kingImage;
 
     public MemeCard PlayerMeme { get; set; }
     [HideInInspector]
     public MemeCard[] JokerMemes = new MemeCard[2];
 
     public int KingKardIndex { get; private set; }
-
+    private List<string> _kingKards = new List<string>();
 
 
     public void ShowCard()
     {
-        int level = GameManager.GameLevel;
-        if (level > gameData.KingsCards.Length)
+        if (_kingKards.Count == 0) // start of the game
         {
-            Debug.Log("Game Finished");
-            return;
+            _kingKards = gameData.KingsCards.ToList();
         }
 
-        KingKardIndex = level - 1;
-        string text = gameData.KingsCards[KingKardIndex];
+        if (GameManager.GameLevel == 6)
+        {
+            Player.CanPlay = false;
+            Debug.Log("Game Finished");
+            Invoke(nameof(GameFinished), 0.5f);
+            return;
+        } // game finish
+
+        KingKardIndex = UnityEngine.Random.Range(0, _kingKards.Count);
+        string text = _kingKards[KingKardIndex];
         StartCoroutine(TextVisible(kingText, text));
+        kingImage.sprite = kingImages[UnityEngine.Random.Range(0, kingImages.Length)];
+        _kingKards.RemoveAt(KingKardIndex);
     }
+
+    private void GameFinished()
+    {
+        // who win
+        if (GameManager.Instance.player.MyScore < joker1.MyScore || GameManager.Instance.player.MyScore < joker2.MyScore)
+        {
+            // game over
+            gameOver.SetActive(true);
+        }
+        else
+        {
+            // player win
+            gameWin.SetActive(true);
+        }
+        GameManager.Instance.ChangeTurnStatus(TurnStatus.GameEnd);
+    }
+
     private IEnumerator TextVisible(TextMeshProUGUI textMesh, string text, bool closeText = false)
     {
         textMesh.transform.parent.gameObject.SetActive(true);
@@ -83,7 +118,11 @@ public class KingControler : MonoBehaviour
     }
     private IEnumerator TurnEndSequence()
     {
-        yield return new WaitForSeconds(delayAfterPlayer);
+        yield return new WaitForSeconds(delayAfterPlayer - 1f);
+        string text = "Well well well...";
+        StartCoroutine(TextVisible(kingText, text));
+        yield return new WaitForSeconds(1.5f);
+        kingImage.sprite = kingSmiling;
         int[] scores = new int[3];
         int jok1 = JokerMemes[0].GetScore();
         int jok2 = JokerMemes[1].GetScore();
@@ -145,7 +184,10 @@ public class KingControler : MonoBehaviour
         GameManager.Instance.ChangeTurnStatus(TurnStatus.BeforeEnd);
     }
 
-
+    public void Talk(string text)
+    {
+        StartCoroutine(TextVisible(kingText, text));
+    }
 
     #endregion
 

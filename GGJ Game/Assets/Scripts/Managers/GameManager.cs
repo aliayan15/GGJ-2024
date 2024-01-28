@@ -8,7 +8,8 @@ public enum TurnStatus
 {
     Begin,
     End,
-    BeforeEnd
+    BeforeEnd,
+    GameEnd
 }
 
 public class GameManager : MonoBehaviour
@@ -20,6 +21,8 @@ public class GameManager : MonoBehaviour
     [Header("Refs")]
     public KingControler KingControler;
     public RectTransform playerCardPlace;
+    public Player player;
+    [SerializeField] private GameObject[] startObjs;
 
 
     public TurnStatus CurrentTurnStatus { get; private set; }
@@ -34,6 +37,36 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        //ChangeTurnStatus(TurnStatus.Begin);
+        for (int i = 0; i < startObjs.Length; i++)
+        {
+            startObjs[i].SetActive(false);
+        }
+        StartCoroutine(StartTalk());
+    }
+    private IEnumerator StartTalk()
+    {
+        string talk = "";
+
+        talk = "You have got one last chance!";
+        KingControler.Talk(talk);
+        yield return new WaitForSeconds(4f);
+        talk = "You and those two jokers.";
+        KingControler.Talk(talk);
+        yield return new WaitForSeconds(4f);
+        talk = "Only one will be left… I’m too bored…";
+        KingControler.Talk(talk);
+        yield return new WaitForSeconds(5f);
+        talk = "Show yourself, use whatever leverage you have.";
+        KingControler.Talk(talk);
+        yield return new WaitForSeconds(5f);
+        talk = "To… Make… Me… Laugh!";
+        KingControler.Talk(talk);
+        yield return new WaitForSeconds(5f);
+        for (int i = 0; i < startObjs.Length; i++)
+        {
+            startObjs[i].SetActive(true);
+        }
         ChangeTurnStatus(TurnStatus.Begin);
     }
 
@@ -62,7 +95,7 @@ public class GameManager : MonoBehaviour
     }
 
     #region Utility
-    public IEnumerator TextVisible(TextMeshProUGUI textMesh, string text,float timeBtwnChars)
+    public IEnumerator TextVisible(TextMeshProUGUI textMesh, string text, float timeBtwnChars)
     {
         textMesh.text = text;
         textMesh.ForceMeshUpdate();
